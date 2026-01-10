@@ -1,0 +1,169 @@
+{
+  "name": "tslens",
+  "displayName": "TSLens - CodeLens for TypeScript and JavaScript",
+  "description": "",
+  "version": "1.0.0",
+  "publisher": "vkay94",
+  "author": "Viktor Krez",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vkay94/vscode-tslens.git"
+  },
+  "engines": {
+    "vscode": "^1.78.0"
+  },
+  "keywords": [
+    "references",
+    "typescript",
+    "javascript",
+    "angular"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:typescript"
+  ],
+  "main": "./out/extension.js",
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint ./src --ext .ts,.js --fix",
+    "lint:check": "eslint ./src --ext .ts,.js",
+    "format": "prettier --write ./src --log-level silent",
+    "format:check": "prettier --check ./src --log-level silent",
+    "clean": "npx rimraf dist out tsc",
+    "vscode:prepublish": "npm run esbuild-base -- --minify",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
+    "esbuild": "npm run esbuild-base -- --sourcemap",
+    "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+    "vsce": "npm run clean && vsce package"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "tslens.toggle",
+        "title": "Toggle TSLens"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "TSLens",
+      "properties": {
+        "tslens.excludeSelf": {
+          "default": true,
+          "description": "A flag which indicates whether the initiating reference should be excluded in the list.",
+          "type": "boolean",
+          "order": 10
+        },
+        "tslens.exclude": {
+          "scope": "resource",
+          "description": "Array of patterns (in glob format) to exclude from showing reference on top. For example '**/src/app/enums/*'.",
+          "type": "array",
+          "default": [],
+          "order": 20
+        },
+        "tslens.showReferencePlace": {
+          "default": "peek",
+          "description": "Defines where the reference shall be shown on click.",
+          "type": "string",
+          "enum": [
+            "peek",
+            "view"
+          ],
+          "enumDescriptions": [
+            "Shows the references inside the editor.",
+            "Shows the references on the sidebar where 'References' has been placed."
+          ],
+          "order": 30
+        },
+        "tslens.decorateUnused": {
+          "default": true,
+          "description": "A flag which indicates whether the initiating reference should be decorated if it is unsed.",
+          "type": "boolean",
+          "order": 40
+        },
+        "tslens.unusedColor": {
+          "default": "#999",
+          "description": "HEX color for unused references. The method name's text, for example, changes into this HEX color.",
+          "type": "string",
+          "order": 50
+        },
+        "tslens.singular": {
+          "default": "{0} reference",
+          "description": "Localization for the singular case.",
+          "type": "string",
+          "order": 60
+        },
+        "tslens.plural": {
+          "default": "{0} references",
+          "description": "Localization for the plural case.",
+          "type": "string",
+          "order": 70
+        },
+        "tslens.noReferences": {
+          "default": "No references found for {0}",
+          "description": "Localization for the case when there are no references found.",
+          "type": "string",
+          "order": 80
+        },
+        "tslens.ignoreList": {
+          "default": [
+            "ngOnChanges",
+            "ngOnInit",
+            "ngDoCheck",
+            "ngAfterContentInit",
+            "ngAfterContentChecked",
+            "ngAfterViewInit",
+            "ngAfterViewChecked",
+            "ngOnDestroy"
+          ],
+          "description": "Symbol names to be ignored. For Angular, for example, symbols like ngOnInit or ngOnChanges.",
+          "type": "array",
+          "order": 90
+        },
+        "tslens.excludingReferencePaths": {
+          "default": [
+            "**/node_modules/**/*"
+          ],
+          "description": "Array of patterns (in glob format) which should not appear in the results list. For example '**/node_modules/**/*'.",
+          "type": "array",
+          "order": 100
+        },
+        "tslens.excludingReferenceOnlyText": {
+          "default": "- - - - - - -",
+          "description": "Indicator text when there are no results but the symbol was provided (it shows rarely and for third party properties for example).",
+          "type": "string",
+          "order": 110
+        },
+        "tslens.pipeMessageText": {
+          "default": "HTML references",
+          "description": "Angular: Text which is shown above name property of an Angular Pipe annotation. Searches for the name in html files and shows them in the search results.",
+          "type": "string",
+          "order": 120
+        }
+      }
+    }
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.78.0",
+    "@typescript-eslint/eslint-plugin": "^8.52.0",
+    "@typescript-eslint/parser": "^8.52.0",
+    "@vscode/test-electron": "^2.5.2",
+    "esbuild": "^0.27.2",
+    "eslint": "^9.39.2",
+    "eslint-plugin-unicorn": "^62.0.0",
+    "prettier": "^3.7.4",
+    "rimraf": "^6.1.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.52.0"
+  },
+  "dependencies": {
+    "minimatch": "^10.1.1"
+  }
+}
