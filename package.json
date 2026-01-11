@@ -2,7 +2,7 @@
   "name": "tslens",
   "displayName": "TSLens - CodeLens for TypeScript and JavaScript",
   "description": "",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "vkay94",
   "author": "Viktor Krez",
   "license": "MIT",
