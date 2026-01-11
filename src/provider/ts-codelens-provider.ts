@@ -29,9 +29,12 @@ import { UnusedDecoration } from './unused-decoration';
 export class TSCodeLensProvider implements CodeLensProvider {
   config: AppConfiguration;
 
-  private unusedDecorations: Map<string, UnusedDecoration> = new Map<string, UnusedDecoration>();
+  private readonly unusedDecorations: Map<string, UnusedDecoration> = new Map<
+    string,
+    UnusedDecoration
+  >();
 
-  constructor(private statusbarItem: StatusBarItem) {
+  constructor(private readonly statusbarItem: StatusBarItem) {
     this.config = new AppConfiguration();
   }
 
@@ -84,8 +87,7 @@ export class TSCodeLensProvider implements CodeLensProvider {
 
         const iterateList: (DocumentSymbol & { depth?: number })[] = [];
 
-        for (let i = 0; i < symbols.length; i++) {
-          const symbol = symbols[i];
+        for (const symbol of symbols) {
           if (isDocumentSymbol(symbol)) {
             iterateList.push({ ...symbol, depth: 0 });
           } else if (symbol.location) {
@@ -220,13 +222,13 @@ export class TSCodeLensProvider implements CodeLensProvider {
     const range = symbol.range;
 
     if (range) {
-      const symbolText = document.getText(range as Range);
+      const symbolText = document.getText(range);
       const documentOffset = document.offsetAt(range.start);
 
       let leftMatch: Range;
       let rightMatch: Range;
 
-      if (symbolText.indexOf(symbol.name) > -1) {
+      if (symbolText.includes(symbol.name)) {
         const maxOffset = documentOffset + symbolText.length;
         let lookupOffset = documentOffset;
         while (lookupOffset < maxOffset) {

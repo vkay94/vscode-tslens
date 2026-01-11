@@ -48,9 +48,9 @@ export function activate(context: ExtensionContext) {
 
   const disposables: Disposable[] = context.subscriptions;
 
-  // Subscription to listen for toggling. It can be either triggered via the status bar item or via
-  // the option "Toggle TSLens" via Ctrl+P
   disposables.push(
+    // Subscription to listen for toggling. It can be either triggered via the status bar item or via
+    // the option "Toggle TSLens" via Ctrl+P
     commands.registerCommand('tslens.toggle', () => {
       provider.config.tsLensEnabled = !provider.config.tsLensEnabled;
       window.showInformationMessage(
@@ -62,11 +62,8 @@ export function activate(context: ExtensionContext) {
         statusBarItem.text = '$(references) TSLens';
       }
     }),
-  );
-
-  // Subscription to show the references in the references window instead of inline within the editor.
-  // See "tslens.showReferencePlace" in the settings or in package.json for more info.
-  disposables.push(
+    // Subscription to show the references in the references window instead of inline within the editor.
+    // See "tslens.showReferencePlace" in the settings or in package.json for more info.
     commands.registerCommand('tslens.showReferencesInTree', ([uri, range]: [Uri, Range]) => {
       const editor = window.activeTextEditor;
       if (editor) {
@@ -80,21 +77,18 @@ export function activate(context: ExtensionContext) {
           });
       }
     }),
-  );
 
-  disposables.push(languages.registerCodeLensProvider(supportedLanguages, provider));
-
-  // Subscriptions to update the window by showing the elements "x references"
-  // as lens in the editor.
-  disposables.push(
+    languages.registerCodeLensProvider(supportedLanguages, provider),
+    // Subscriptions to update the window by showing the elements "x references"
+    // as lens in the editor.
     window.onDidChangeActiveTextEditor(editor => {
       if (editor) {
         provider.updateDecorations(editor.document.uri);
       }
     }),
+    statusBarItem,
   );
 
-  disposables.push(statusBarItem);
   updateStatusBarItem();
   disposables.push(window.onDidChangeActiveTextEditor(updateStatusBarItem));
 }

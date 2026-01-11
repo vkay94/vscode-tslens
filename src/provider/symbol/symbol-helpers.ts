@@ -1,7 +1,7 @@
 import { DocumentSymbol, SymbolKind, TextDocument, TextLine } from 'vscode';
 import { FlattenedSymbol } from './flattened-symbol';
 
-const symbolKindInterestSet = [
+const symbolKindInterestSet = new Set([
   SymbolKind.Method,
   SymbolKind.Function,
   SymbolKind.Property,
@@ -9,15 +9,15 @@ const symbolKindInterestSet = [
   SymbolKind.Interface,
   SymbolKind.Enum,
   SymbolKind.Variable,
-];
+]);
 
-const acceptedParentSymbolKinds = [
+const acceptedParentSymbolKinds = new Set([
   SymbolKind.Interface,
   SymbolKind.Class,
   SymbolKind.Enum,
   SymbolKind.Method,
   SymbolKind.Function,
-];
+]);
 
 export function createAngularPipeFlattenedSymbol(document: TextDocument): FlattenedSymbol | null {
   let foundPipe = false;
@@ -38,9 +38,9 @@ export function createAngularPipeFlattenedSymbol(document: TextDocument): Flatte
     return {
       kind: SymbolKind.Class,
       name: nameTextLine.text
-        .replace(/\s/g, '')
+        .replaceAll(/\s/g, '')
         .replace('name:', '')
-        .replace(/'/g, '')
+        .replaceAll("'", '')
         .replace(',', ''),
       range: nameTextLine.range,
       depth: 0,
@@ -57,8 +57,8 @@ export function createAngularPipeFlattenedSymbol(document: TextDocument): Flatte
 export function isHandledSymbol(symbol: FlattenedSymbol, ignoreList: string[]): boolean {
   const isUnsupportedSymbol =
     symbol.name === undefined ||
-    ignoreList.indexOf(symbol.name) > -1 ||
-    symbol.name.indexOf('.') > -1 ||
+    ignoreList.includes(symbol.name) ||
+    symbol.name.includes('.') ||
     symbol.name === '<unknown>' ||
     symbol.name === '<function>' ||
     symbol.name.endsWith(' callback');
@@ -67,7 +67,7 @@ export function isHandledSymbol(symbol: FlattenedSymbol, ignoreList: string[]): 
     return false;
   }
 
-  const isKnownInterest = symbolKindInterestSet.indexOf(symbol.kind) > -1;
+  const isKnownInterest = symbolKindInterestSet.has(symbol.kind);
   const isMainVariable = symbol.kind === SymbolKind.Variable && symbol.depth === 0;
 
   if (!isKnownInterest && !isMainVariable) {
@@ -113,8 +113,8 @@ export function checkChildSymbols(
         child.kind !== SymbolKind.Variable,
     );
   }
-  (children ?? []).forEach(nested => {
-    const isAllowedParentKind = acceptedParentSymbolKinds.indexOf(symbol.kind) > -1;
+  for (const nested of children ?? []) {
+    const isAllowedParentKind = acceptedParentSymbolKinds.has(symbol.kind);
     if (
       !isAllowedParentKind &&
       (nested.kind === SymbolKind.Property ||
@@ -124,5 +124,5 @@ export function checkChildSymbols(
       return;
     }
     iterateList.push({ ...nested, depth: symbol.kind === SymbolKind.Enum ? 1 : undefined });
-  });
+  }
 }

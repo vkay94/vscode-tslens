@@ -5,9 +5,8 @@
     "outDir": "out",
     "sourceMap": true,
     "rootDir": "src",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "lib": ["ES2022"]
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }
